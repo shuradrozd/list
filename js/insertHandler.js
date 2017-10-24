@@ -7,6 +7,7 @@ module.exports = {
         res.render(path.join(__dirname, '../pages/add_item_page'));
     },
     addRow: function(req, res) {
+        alert("test");
         console.log('show_item');
         queries.insertItem(req.body, req, res);
     }

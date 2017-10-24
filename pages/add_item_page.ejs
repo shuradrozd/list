@@ -10,8 +10,8 @@
                 var inputs = document.getElementsByTagName('input');
 
                 for (var i = 0; i < inputs.length - 1; i++) {
-                    if (inputs[i].value == '') {
-                        errorContainer.innerHTML = "Error. Empty Field";
+                    if (inputs[i].value == "") {
+                        errorContainer.innerHTML = "Error! Empty Field";
                         console.log('Empty Field');
                         return;
                     }
@@ -26,7 +26,7 @@
                         }
                     };
 
-
+                    console.log(item);
                 var data = JSON.stringify(item);
                     xhr.setRequestHeader('Content-Type','application/json');
                     xhr.send(data);
