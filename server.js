@@ -20,7 +20,7 @@ app.use(bodyParser.text());
 
 app.get('/', displayHandler.displayItems);
 app.get('/add', insertHandler.loadAddPage);
-app.get('/add/newItem', insertHandler.addRow);
+app.post('/add/newItem', insertHandler.addRow);
 
 // processing errors
 app.use(function(err, req, res, next){

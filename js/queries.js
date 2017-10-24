@@ -3,10 +3,10 @@ var connection = require('./config');
 module.exports = {
     tableRows: ``,
     getAllItems: function(req, res){
-        self = this;
+        var self = this;
         self.tableRows = ``;
         var request = new mssql.Request(connection);
-        request.query("SELECT * FROM List");
+        request.query("SELECT * FROM Todo");
         request.stream = true;
         request.on('row', function(row){
             self.tableRows += `<tr>
@@ -29,9 +29,9 @@ module.exports = {
         ps.input('name', mssql.Text);
         ps.input('description', mssql.Text);
         ps.input('completed', mssql.Int);
-        ps.prepare("INSERT INTO List (name, description, completed) VALUES(@name,@description,@completed)", function(err){
+        ps.prepare("INSERT INTO Todo (name, description, completed) VALUES(@name,@description,@completed)", function(err){
             if (err) console.log(err);
-            var request = ps.execute(inserts, function(err) {
+           ps.execute(inserts, function(err) {
                 if (err) console.log(err);
                 console.log('Add Item');
                 ps.unprepare();
