@@ -19,6 +19,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.text());
 
 app.get('/', displayHandler.displayItems);
+app.get('/edit', displayHandler.displayEditItems);
+app.get('/edit/1', displayHandler.displayOneItem);
 app.get('/add', insertHandler.loadAddPage);
 app.post('/add/newItem', insertHandler.addRow);
 

@@ -5,5 +5,12 @@ var queries = require('./queries');
 module.exports = {
   displayItems: function(req, res) {
       queries.getAllItems(req, res);
-  }
+  },
+    displayEditItems : function (req, res) {
+        queries.getAllEditItems(req, res);
+    },
+    displayOneItem : function (req, res) {
+        queries.getOneEditItem(req, res);
+    }
+
 };
