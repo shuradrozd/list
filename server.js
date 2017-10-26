@@ -22,7 +22,8 @@ app.use(bodyParser.text());
 app.get('/', displayHandler.displayItems);
 app.get('/edit', editHandler.displayEditItems);
 app.get('/edit/:id', editHandler.displayOneItem);
-app.post('/edit/editItem', editHandler.editRow);
+app.get('/delete/:id', editHandler.deleteRow);
+app.put('/edit/editItem', editHandler.editRow);
 app.get('/add', insertHandler.loadAddPage);
 app.post('/add/newItem', insertHandler.addRow);
 

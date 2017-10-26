@@ -1,11 +1,11 @@
 var mssql = require('mssql');
 var config = {
     user: 'test',
-    //password: 'test',
-    password: 'jndbynf_11',
+    password: 'test',
+    //password: 'jndbynf_11',
     server: 'localhost',
-    //database: 'test',
-    database: 'temp',
+    database: 'test',
+    //database: 'temp',
     port: 1433,
     pool: {
         max: 10,

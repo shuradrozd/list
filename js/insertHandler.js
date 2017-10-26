@@ -10,9 +10,4 @@ module.exports = {
         console.log(req.body);
         queries.insertItem(req.body, req, res);
     }
-
-    // editOneRow: function(req, res) {
-    //     console.log(req.body);
-    //     queries.editOneItem(req.body, req, res);
-    // }
 };

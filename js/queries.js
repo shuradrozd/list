@@ -9,13 +9,13 @@ module.exports = {
         request.query("SELECT * FROM Todo");
         request.stream = true;
         request.on('row', function(row){
-            self.tableRows += `<tr>
+            self.tableRows += ` <tr>
                 <td>${row.name}</td>
                 <td>${row.description}</td>
                 <td>${row.completed? 'yes' : 'no'}</td>
                    </tr>`;
         })
-        request.on('done',  function(){
+        request.on('done',  function(affected){
             res.render('index', {data: self.tableRows});
         })
     },
@@ -27,7 +27,11 @@ module.exports = {
         request.stream = true;
         request.on('row', function(row){
             self.tableRows += `<tr>
-                <td><a href="edit/${row.id}" class="glyphicon glyphicon-pencil">&nbsp;</a>${row.name}</td>
+                <td>
+                  <a href="edit/${row.id}" class="glyphicon glyphicon-pencil" style="cursor: pointer">&nbsp;</a>
+                <!--<span id = "${row.id}" class="glyphicon glyphicon-pencil" style="cursor: pointer">&nbsp;</span>-->
+                <a href="delete/${row.id}" class="glyphicon glyphicon-remove" style="cursor: pointer">&nbsp;</a>
+                    ${row.name}</td>
                 <td>${row.description}</td>
                 <td>${row.completed? 'yes' : 'no'}</td>
                    </tr>`;
@@ -39,7 +43,7 @@ module.exports = {
     getOneEditItem: function(req, res) {
 
         var inserts = {
-            id: req.params.id
+            id: parseInt(req.params.id)
         };
         var ps = new mssql.PreparedStatement(connection);
         ps.input('id', mssql.Int);
@@ -51,14 +55,17 @@ module.exports = {
                 //console.log(rows);
                 var row = rows.recordset[0];
 
-                res.render('edit_item_page', {id: row.id, name:row.name, description:row.description,
-                    completed: row.completed ? 'checked': ''});
+                res.render('edit_item_page', {
+                    id: row.id,
+                    name:row.name,
+                    description:row.description,
+                    completed: row.completed});
                 //console.log({id: row.id, name:row.name, description:row.description,
                   //  completed: row.completed ? 'checked': ''});
                 ps.unprepare();
             });
 
-        })
+        });
     },
     insertItem: function(data, req, res) {
         var inserts = {
@@ -74,8 +81,9 @@ module.exports = {
             if (err) console.log(err);
            ps.execute(inserts, function(err) {
                 if (err) console.log(err);
-                console.log('Add Item');
+                console.log('add item');
                 ps.unprepare();
+
             });
         });
     },
@@ -99,8 +107,26 @@ module.exports = {
             if (err) console.log(err);
             ps.execute(inserts, function(err) {
                 if (err) console.log(err);
-                console.log('Edit Item');
+                console.log('item updated');
                 ps.unprepare();
+
+            });
+        });
+    },
+    deleteItem: function(req, res) {
+        var inserts = {
+            id: parseInt(req.params.id)
+        };
+        console.log(inserts);
+        var ps = new mssql.PreparedStatement(connection);
+        ps.input('id', mssql.Int);
+        ps.prepare("DELETE FROM Todo WHERE id = @id", function(err){
+            if (err) console.log(err);
+            ps.execute(inserts, function(err) {
+                if (err) console.log(err);
+                console.log('item deleted');
+                ps.unprepare();
+                res.redirect('/edit');
             });
         });
     }
