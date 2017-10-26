@@ -2,7 +2,6 @@ var mssql = require('mssql');
 var connection = require('./config');
 module.exports = {
     tableRows: ``,
-    Rows: ``,
     getAllItems: function(req, res){
         var self = this;
         self.tableRows = ``;
@@ -28,7 +27,7 @@ module.exports = {
         request.stream = true;
         request.on('row', function(row){
             self.tableRows += `<tr>
-                <td><a href="edit/${row.id}" class="btn btn-lg btn-info">Edit</a>${row.name}</td>
+                <td><a href="edit/${row.id}" class="glyphicon glyphicon-pencil">&nbsp;</a>${row.name}</td>
                 <td>${row.description}</td>
                 <td>${row.completed? 'yes' : 'no'}</td>
                    </tr>`;
@@ -38,21 +37,24 @@ module.exports = {
         })
     },
     getOneEditItem: function(req, res) {
-        console.log(req.params.id);
-        var inserts = {
-            id: parseInt(req.params.id)
 
+        var inserts = {
+            id: req.params.id
         };
         var ps = new mssql.PreparedStatement(connection);
         ps.input('id', mssql.Int);
-        ps.prepare("SELECT * FROM Todo WHERE id = 1", function(err){
+        ps.prepare("SELECT * FROM Todo WHERE id = @id", function(err){
             if (err) console.log(err);
-            ps.execute(inserts, function(err, row) {
+            ps.execute(inserts, function(err, rows) {
                 if (err) console.log(err);
                 console.log('Select item by Id');
-               //var row = rows[0];
+                //console.log(rows);
+                var row = rows.recordset[0];
+
                 res.render('edit_item_page', {id: row.id, name:row.name, description:row.description,
-                    completed: row.completed? 'true': 'false'});
+                    completed: row.completed ? 'checked': ''});
+                //console.log({id: row.id, name:row.name, description:row.description,
+                  //  completed: row.completed ? 'checked': ''});
                 ps.unprepare();
             });
 
@@ -73,6 +75,31 @@ module.exports = {
            ps.execute(inserts, function(err) {
                 if (err) console.log(err);
                 console.log('Add Item');
+                ps.unprepare();
+            });
+        });
+    },
+    editItem: function(data, req, res) {
+
+        var inserts = {
+            id: data.id,
+            name: data.name,
+            description: data.description,
+            completed: parseInt(data.completed)
+        };
+
+        console.log(inserts);
+
+        var ps = new mssql.PreparedStatement(connection);
+        ps.input('id', mssql.Int);
+        ps.input('name', mssql.Text);
+        ps.input('description', mssql.Text);
+        ps.input('completed', mssql.Int);
+        ps.prepare("UPDATE Todo SET name = @name, description = @description, completed = @completed WHERE id = @id", function(err){
+            if (err) console.log(err);
+            ps.execute(inserts, function(err) {
+                if (err) console.log(err);
+                console.log('Edit Item');
                 ps.unprepare();
             });
         });
