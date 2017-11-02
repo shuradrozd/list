@@ -1,44 +1,63 @@
 var mssql = require('mssql');
 var connection = require('./config');
+var url = require('url');
 module.exports = {
     tableRows: ``,
+    tableColumns: ``,
+
     getAllItems: function(req, res){
         var self = this;
         self.tableRows = ``;
+        self.tableColumns = ``;
         var request = new mssql.Request(connection);
-        request.query("SELECT * FROM Todo");
+        request.query("SELECT COLUMN_NAME as colName from information_schema.columns WHERE table_name = 'Todo' and COLUMN_NAME <> 'id'");
         request.stream = true;
         request.on('row', function(row){
-            self.tableRows += ` <tr>
+            //console.log(row.colName);
+            self.tableColumns += `
+                 <th>${row.colName}</th>
+                 `;
+        });
+
+            var request1 = new mssql.Request(connection);
+            request1.query("SELECT * FROM Todo");
+            request1.stream = true;
+
+        if (url.parse(req.url, true).pathname == '/') {
+
+            request1.on('row', function (row) {
+                self.tableRows += ` <tr>
                 <td>${row.name}</td>
                 <td>${row.description}</td>
-                <td>${row.completed? 'yes' : 'no'}</td>
+                <td>${row.completed ? 'yes' : 'no'}</td>
                    </tr>`;
-        })
-        request.on('done',  function(affected){
-            res.render('index', {data: self.tableRows});
-        })
-    },
-    getAllEditItems: function(req, res){
-        var self = this;
-        self.tableRows = ``;
-        var request = new mssql.Request(connection);
-        request.query("SELECT * FROM Todo");
-        request.stream = true;
-        request.on('row', function(row){
-            self.tableRows += `<tr>
+                //console.log(self.tableRows);
+            })
+            request1.on('done', function (affected) {
+                res.render('index', {columns: self.tableColumns, data: self.tableRows});
+            })
+         } else {
+            console.log(url.parse(req.url, true).pathname);
+            console.log(self.tableColumns);
+            request1.on('row', function(row){
+                self.tableRows += `<tr>
                 <td>
-                  <a href="edit/${row.id}" class="glyphicon glyphicon-pencil" style="cursor: pointer">&nbsp;</a>
-                <!--<span id = "${row.id}" class="glyphicon glyphicon-pencil" style="cursor: pointer">&nbsp;</span>-->
-                <a href="delete/${row.id}" class="glyphicon glyphicon-remove" style="cursor: pointer">&nbsp;</a>
+                
+                  <!--<a href="edit/${row.id}" class="glyphicon glyphicon-pencil" style="cursor: pointer">&nbsp;</a>-->
+                
+                <span id = "${row.id}" class="glyphicon glyphicon-pencil spn-edit" style="cursor: pointer">&nbsp;</span>
+                <span id = "${row.id}" class="glyphicon glyphicon-remove spn-delete" style="cursor: pointer">&nbsp;</span>
+                
+                <!--<a href="delete/${row.id}" class="glyphicon glyphicon-remove" style="cursor: pointer">&nbsp;</a>-->
                     ${row.name}</td>
                 <td>${row.description}</td>
-                <td>${row.completed? 'yes' : 'no'}</td>
+                <td>${row.completed ? 'yes' : 'no'}</td>
                    </tr>`;
-        })
-        request.on('done',  function(){
-            res.render('edit', {data: self.tableRows});
-        })
+            })
+            request1.on('done',  function(affected){
+                res.render('index', {columns: self.tableColumns, data: self.tableRows});
+            })
+        }
     },
     getOneEditItem: function(req, res) {
 
@@ -83,7 +102,6 @@ module.exports = {
                 if (err) console.log(err);
                 console.log('add item');
                 ps.unprepare();
-
             });
         });
     },

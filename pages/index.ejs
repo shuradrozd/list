@@ -8,24 +8,63 @@
     <title>App</title>
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="./css/style.css" />
+    <script>
+        window.onload = function() {
+            var btns = document.getElementsByClassName('edit');
+            if (window.location.pathname == "/") {
+                    for (var i = 0; i < btns.length; i++) {
+                        btns[i].style.visibility = 'hidden';
 
+                    }
+                document.getElementsByClassName('main')[0].style.visibility = 'visible';
+            }   else {
+                var spn_edit = document.getElementsByClassName('spn-edit');
+                var spn_del = document.getElementsByClassName('spn-delete');
+                for (var i = 0; i < spn_edit.length; i++) {
+                    spn_edit[i].addEventListener('click', function () {
+                        var id = this.getAttribute('id');
+                        console.log(id);
+                        window.location.href = '/edit/' + id;
+                    });
+                }
+                for (var i = 0; i < spn_del.length; i++) {
+                    spn_del[i].addEventListener('click', function () {
+                        var id = this.getAttribute('id');
+                        console.log(id);
+                        window.location.href = '/delete/' + id;
+                    });
+                }
+
+                for (var i = 0; i < btns.length; i++) {
+                    btns[i].style.visibility = 'visible';
+
+                }
+                document.getElementsByClassName('main')[0].style.visibility = 'hidden';
+            }
+
+        }
+    </script>
 </head>
 <body>
     <div class="panel panel-primary">
         <h1>ToDo List</h1>
         <table class="table table-striped">
             <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Completed</th>
-                </tr>
+            <tr>
+                <%- columns%>
+            </tr>
             </thead>
             <tbody>
                 <%- data%>
             </tbody>
         </table>
     </div>
-    <a href="/edit" class="btn btn-lg btn-info">Edit item!</a>
+    <div class="main">
+        <a href="/edit" class="btn btn-lg btn-info">Edit item!</a>
+    </div>
+    <div class="edit">
+        <a href="add" class="btn btn-lg btn-info">Add item!</a>
+        <a href="/" class="btn btn-lg btn-info">Done!</a>
+    </div>
 </body>
 </html>

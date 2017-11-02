@@ -20,7 +20,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.text());
 
 app.get('/', displayHandler.displayItems);
-app.get('/edit', editHandler.displayEditItems);
+app.get('/edit', displayHandler.displayItems);
 app.get('/edit/:id', editHandler.displayOneItem);
 app.get('/delete/:id', editHandler.deleteRow);
 app.put('/edit/editItem', editHandler.editRow);

@@ -9,3 +9,14 @@ h1 {
 a:hover {
  text-decoration: none;
 }
+
+th {
+    text-transform: capitalize;
+}
+
+.main {
+    visibility: visible;
+}
+.edit {
+    visibility: visible;
+}
